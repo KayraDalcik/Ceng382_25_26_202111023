@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Şut Çek - Kaptan Tsubasa</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
+
+        body {
+            font-family: Arial, sans-serif;
+            background: url('images/wp11389401.webp') no-repeat center center/cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .login-container {
+            width: 600px;
+            height: 500px;
+            background: rgba(0, 128, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .midline {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: white;
+        }
+
+        .circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 80px;
+            height: 80px;
+            border: 4px solid white;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .goal {
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            width: 180px;
+            height: 130px;
+            transform: translateX(-50%);
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        .goal-frame {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 5px solid white;
+            border-top: 10px solid white;
+            box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .goal-net {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(white 1px, transparent 1px),
+                        linear-gradient(to right, white 1px, transparent 1px);
+            background-size: 15px 15px;
+            opacity: 0.7;
+        }
+
+        .football {
+            position: absolute;
+            top: 80px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 50%;
+            border: 3px solid black;
+            transition: transform 1s ease-in-out;
+            box-shadow: 0 0 20px orange;
+            animation: bounce 0.5s infinite alternate;
+        }
+
+        @keyframes bounce {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-10px); }
+        }
+
+        .football.goal-animation {
+            animation: goal-move 1s ease-in-out forwards;
+        }
+
+        @keyframes goal-move {
+            0% { transform: translate(0, 0); }
+            50% { transform: translate(-80px, -40px); }
+            100% { transform: translate(-150px, -10px); }
+        }
+
+        .goal-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 60px;
+            font-family: 'Bangers', cursive;
+            color: yellow;
+            text-shadow: 3px 3px 10px red, 3px 3px 20px orange;
+            display: none;
+        }
+
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 215, 0, 0.5);
+            display: none;
+            animation: flash 1s alternate infinite;
+        }
+
+        @keyframes flash {
+            0% { background: rgba(255, 215, 0, 0.3); }
+            100% { background: rgba(255, 0, 0, 0.7); }
+        }
+
+        @keyframes buttonShake {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        button:active {
+            animation: buttonShake 0.3s ease;
+        }
+
+        .form-container {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+        }
+    </style>
+    <script>
+        function shootBall() {
+            let ball = document.querySelector('.football');
+            let goalText = document.querySelector('.goal-text');
+            let celebration = document.querySelector('.celebration');
+            let playerName = document.getElementById('player-name').value;
+
+            ball.classList.add('goal-animation');
+            setTimeout(() => {
+                goalText.innerText = playerName + ' GOOOOOLLLL!!!!';
+                goalText.style.display = 'block';
+                celebration.style.display = 'block';
+            }, 1000);
+        }
+    </script>
+</head>
+<body>
+    <div class="celebration"></div>
+    <div class="login-container">
+        <div class="midline"></div>
+        <div class="circle"></div>
+        <div class="goal">
+            <div class="goal-frame"></div>
+            <div class="goal-net"></div>
+        </div>
+        <div class="football"></div>
+        <div class="goal-text"></div>
+        <div class="form-container">
+            <form onsubmit="event.preventDefault(); shootBall();">
+                <input type="text" id="player-name" placeholder="İsminizi Girin" required>
+                <button type="submit">Şut Çek</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
