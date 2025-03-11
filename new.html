@@ -164,7 +164,7 @@
         <div class="football"></div>
         <div class="goal-text" id="goal-text"></div>
         <div class="form-container" id="login-form">
-            <form onsubmit="event.preventDefault(); saveUser(); shootBall();">
+            <form onsubmit="event.preventDefault(); login();">
                 <input type="text" id="username" placeholder="Kullanıcı Adı" required>
                 <input type="password" id="password" placeholder="Şifre" required>
                 <button type="submit">Giriş Yap & Şut Çek</button>
@@ -173,14 +173,15 @@
     </div>
 
     <script>
-        let users = [];
+        function login() {
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
 
-        function saveUser() {
-            let username = document.getElementById('username').value;
-            let password = document.getElementById('password').value;
-
-            users.push({ username, password });
-            console.log("Kayıtlı Kullanıcılar:", users);
+            if (username === "admin" && password === "admin") {
+                shootBall();
+            } else {
+                alert("Hatalı kullanıcı adı veya şifre! Lütfen tekrar deneyin.");
+            }
         }
 
         function shootBall() {
@@ -188,16 +189,28 @@
             let goalText = document.getElementById('goal-text');
             let loginBox = document.getElementById('login-box');
 
+            // Top hareket animasyonu başlat
             ball.classList.add('goal-animation');
 
             setTimeout(() => {
+                // GOL metni göster
                 goalText.innerText = 'GOOOOLLLL!!!';
                 goalText.style.display = 'block';
+
+                // Arkaplanı gif1.gif ile değiştir
                 document.body.style.background = "url('images/gif1.gif') no-repeat center center/cover";
+
+                // Login kutusunu görünmez yap
                 loginBox.style.opacity = "0";
-                
+
                 setTimeout(() => {
                     loginBox.style.display = "none";
+
+                    // 4 saniye sonra table.html sayfasına yönlendir
+                    setTimeout(() => {
+                        window.location.href = "table.html";
+                    }, 5000);
+
                 }, 1000);
             }, 1000);
         }
@@ -213,13 +226,6 @@
 
         setInterval(updateClock, 1000);
         updateClock();
-
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'h' || event.key === 'H') {
-                let form = document.getElementById('login-form');
-                form.classList.toggle('hidden');
-            }
-        });
     </script>
 </body>
 </html>

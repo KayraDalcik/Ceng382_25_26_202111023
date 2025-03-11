@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Class Table</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        form {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            width: 300px;
+        }
+
+        input, button {
+            margin: 5px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        input:focus {
+            border-color: blue;
+            box-shadow: 0 0 5px blue;
+            outline: none;
+        }
+
+        button {
+            background: green;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: darkgreen;
+        }
+
+        table {
+            width: 80%;
+            max-width: 600px;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+
+        th {
+            background: #007BFF;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        tr:hover {
+            background: #fffa90;
+            cursor: pointer;
+        }
+
+        .highlight {
+            background: yellow !important;
+        }
+
+        .error {
+            border-color: red;
+            box-shadow: 0 0 5px red;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Dynamic Class Table</h2>
+
+    <form id="classForm">
+        <input type="text" id="studentName" placeholder="Student Name" required>
+        <input type="number" id="studentAge" placeholder="Age" required>
+        <input type="text" id="studentGrade" placeholder="Grade" required>
+        <button type="submit">Add Student</button>
+        <p>Çift tıklayarak silebilirsiniz</p>
+    </form>
+
+    <table id="classTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Grade</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Student rows will be dynamically added here -->
+        </tbody>
+    </table>
+
+    <script>
+        document.getElementById("classForm").addEventListener("submit", function(event) {
+            event.preventDefault();  // Sayfa yenilemeyi engelle
+
+            let name = document.getElementById("studentName").value.trim();
+            let age = document.getElementById("studentAge").value.trim();
+            let grade = document.getElementById("studentGrade").value.trim();
+
+            if (name === "" || age === "" || grade === "") {
+                alert("All fields are required!");
+                return;
+            }
+
+            let tableBody = document.getElementById("classTable").querySelector("tbody");
+            let newRow = document.createElement("tr");
+
+            newRow.innerHTML = `<td>${name}</td><td>${age}</td><td>${grade}</td>`;
+            
+            // Row Click Event: Satır tıklanınca vurgula ve logla
+            newRow.addEventListener("click", function() {
+                console.log(`Selected Student: ${name}, Age: ${age}, Grade: ${grade}`);
+                document.querySelectorAll("tr").forEach(row => row.classList.remove("highlight"));
+                newRow.classList.add("highlight");
+            });
+
+            // Double-click Event: Satır çift tıklanınca kaldır
+            newRow.addEventListener("dblclick", function() {
+                if (confirm(`Delete ${name} from the table?`)) {
+                    newRow.remove();
+                }
+            });
+
+            // Mouseover & Mouseout Event: Satır üzerine gelince renk değiştir
+            newRow.addEventListener("mouseover", function() {
+                newRow.style.background = "#ffa07a";
+            });
+
+            newRow.addEventListener("mouseout", function() {
+                newRow.style.background = "";
+            });
+
+            tableBody.appendChild(newRow);
+
+            // Formu temizle
+            document.getElementById("classForm").reset();
+        });
+
+        // Table Click Event: Tabloya tıklayınca tüm öğrencileri logla
+        document.getElementById("classTable").addEventListener("click", function(event) {
+            if (event.target.tagName !== "TD") return;
+            let rows = document.querySelectorAll("#classTable tbody tr");
+            let studentList = [];
+
+            rows.forEach(row => {
+                let cells = row.getElementsByTagName("td");
+                studentList.push({
+                    name: cells[0].innerText,
+                    age: cells[1].innerText,
+                    grade: cells[2].innerText
+                });
+            });
+
+            console.log("All Students:", studentList);
+        });
+
+        // Input Focus & Blur Events: Odaklanınca ve çıkınca stil değiştir
+        document.querySelectorAll("input").forEach(input => {
+            input.addEventListener("focus", function() {
+                input.classList.add("active-input");
+            });
+
+            input.addEventListener("blur", function() {
+                if (input.value.trim() === "") {
+                    input.classList.add("error");
+                } else {
+                    input.classList.remove("error");
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
