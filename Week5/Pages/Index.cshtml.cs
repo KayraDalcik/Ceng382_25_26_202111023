@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using YourProjectName.Models;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 
 namespace YourProjectName.Pages
 {
@@ -106,6 +107,22 @@ namespace YourProjectName.Pages
             }
 
             return Page();
+        }
+
+        // Export JSON method (select specific columns)
+        public IActionResult OnPostExportJson([FromForm] List<string> SelectedColumns)
+        {
+            var selectedClasses = _classes.Select(c => 
+            {
+                var dict = new Dictionary<string, object>();
+                if (SelectedColumns.Contains("ClassName")) dict["ClassName"] = c.ClassName;
+                if (SelectedColumns.Contains("StudentCount")) dict["StudentCount"] = c.StudentCount;
+                if (SelectedColumns.Contains("Description")) dict["Description"] = c.Description;
+                return dict;
+            }).ToList();
+
+            var jsonData = JsonSerializer.Serialize(selectedClasses);
+            return File(System.Text.Encoding.UTF8.GetBytes(jsonData), "application/json", "classes.json");
         }
     }
 }

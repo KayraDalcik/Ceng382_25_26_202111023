@@ -4,6 +4,7 @@
     ViewData["Title"] = "Class Information";
 }
 @using Microsoft.AspNetCore.WebUtilities
+@using System.Text.Json
 
 <!DOCTYPE html>
 <html lang="en">
@@ -142,6 +143,22 @@
         </div>
     </div>
 
+    <!-- Export Button -->
+    <div class="text-center my-3">
+        <!-- Column Selection Form -->
+        <form method="post" asp-page-handler="ExportJson">
+            <div class="form-group">
+                <label for="selectedColumns">Select Columns to Export</label>
+                <select class="form-control" id="selectedColumns" name="SelectedColumns" multiple>
+                    <option value="ClassName">Class Name</option>
+                    <option value="StudentCount">Student Count</option>
+                    <option value="Description">Description</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-success mt-2">Export Data</button>
+        </form>
+    </div>
+
     <!-- Edit Modal -->
     <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -174,18 +191,5 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        function populateEditForm(id) {
-            var classData = @Html.Raw(Json.Serialize(Model.Classes));
-            var selectedClass = classData.find(c => c.Id === id);
-
-            if (selectedClass) {
-                document.getElementById("editId").value = selectedClass.Id;
-                document.getElementById("editClassName").value = selectedClass.ClassName;
-                document.getElementById("editStudentCount").value = selectedClass.StudentCount;
-                document.getElementById("editDescription").value = selectedClass.Description;
-            }
-        }
-    </script>
 </body>
 </html>
