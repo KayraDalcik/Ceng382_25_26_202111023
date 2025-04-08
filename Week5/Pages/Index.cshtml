@@ -3,140 +3,92 @@
 @{
     ViewData["Title"] = "Class Information";
 }
+@using Microsoft.AspNetCore.WebUtilities
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"]</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <style>
-        /* Custom styles */
         body {
-            background-color: #fafafa; /* Light grey background */
-            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
         }
-        .container {
-            margin-top: 30px;
-        }
-        .card {
-            border-radius: 8px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-            background-color: #fff;
-        }
-        .btn-custom {
-            border-radius: 15px;
-            padding: 6px 15px;
-            background-color: #28a745; /* Green color */
-            color: white;
-            border: none;
-            font-size: 12px;
-        }
-        .btn-custom:hover {
-            background-color: #218838; /* Darker green on hover */
-        }
-        .btn-danger {
-            border-radius: 15px;
-            padding: 6px 15px;
-            background-color: #dc3545; /* Red color */
-            color: white;
-            border: none;
-            font-size: 12px;
-        }
-        .btn-danger:hover {
-            background-color: #c82333; /* Darker red on hover */
-        }
-        .form-control, .btn {
-            border-radius: 15px;
-        }
+
         .navbar {
-            margin-bottom: 30px;
-            background-color: #56CFE1;
+            background-color: #343a40;
         }
-        .navbar-brand {
-            font-weight: bold;
-            color: white;
+
+        .btn-custom {
+            margin-top: 10px;
         }
-        .table th, .table td {
-            vertical-align: middle;
+
+        .card {
+            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        .modal-content {
-            border-radius: 8px;
+
+        .pagination .page-item.active .page-link {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
         }
-        h2 {
-            color: #333;
-            font-size: 24px;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .table thead {
-            background-color: #56CFE1;
-            color: white;
-        }
-        .table tbody tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        .table tbody tr:hover {
-            background-color: #f1f1f1;
+
+        /* Hide the ID column */
+        .hidden-id {
+            display: none;
         }
     </style>
 </head>
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark px-3">
         <a class="navbar-brand" href="#">Class Manager</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="#">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">About</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Contact</a>
-                </li>
-            </ul>
-        </div>
     </nav>
 
     <!-- Main Content -->
     <div class="container">
         <div class="row">
+            <!-- Add Class Form -->
             <div class="col-md-6">
                 <div class="card p-4">
                     <h2>Add Class</h2>
                     <form method="post">
                         <div class="form-group">
                             <label for="ClassName">Class Name</label>
-                            <input type="text" class="form-control" id="ClassName" name="ClassName" required />
+                            <input type="text" class="form-control" id="ClassName" name="ClassInformation.ClassName" required />
                         </div>
                         <div class="form-group">
                             <label for="StudentCount">Student Count</label>
-                            <input type="number" class="form-control" id="StudentCount" name="StudentCount" required />
+                            <input type="number" class="form-control" id="StudentCount" name="ClassInformation.StudentCount" required />
                         </div>
                         <div class="form-group">
                             <label for="Description">Description</label>
-                            <textarea class="form-control" id="Description" name="Description" required></textarea>
+                            <textarea class="form-control" id="Description" name="ClassInformation.Description" required></textarea>
                         </div>
-                        <button type="submit" class="btn btn-custom" asp-page-handler="Add">Add Class</button>
+                        <button type="submit" class="btn btn-primary btn-custom" asp-page-handler="Add">Add Class</button>
                     </form>
                 </div>
             </div>
 
+            <!-- Class List + Filter -->
             <div class="col-md-6">
                 <div class="card p-4">
                     <h2>Class List</h2>
-                    <table class="table">
+
+                    <!-- Filter Form -->
+                    <form method="get" class="mb-3">
+                        <div class="input-group">
+                            <input type="text" name="SearchName" value="@Model.SearchName" class="form-control" placeholder="Filter by Class Name" />
+                            <button type="submit" class="btn btn-info">Filter</button>
+                        </div>
+                    </form>
+
+                    <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th>Id</th>
+                                <th class="hidden-id">Id</th>
                                 <th>Class Name</th>
                                 <th>Student Count</th>
                                 <th>Description</th>
@@ -147,61 +99,84 @@
                             @foreach (var item in Model.Classes)
                             {
                                 <tr>
-                                    <td>@item.Id</td>
+                                    <td class="hidden-id">@item.Id</td>
                                     <td>@item.ClassName</td>
                                     <td>@item.StudentCount</td>
                                     <td>@item.Description</td>
                                     <td>
-                                        <form method="post" asp-page-handler="Delete">
+                                        <form method="post" asp-page-handler="Delete" style="display:inline;">
                                             <input type="hidden" name="id" value="@item.Id" />
-                                            <button type="submit" class="btn btn-danger btn-custom">Delete</button>
+                                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                                         </form>
-                                        <button class="btn btn-info btn-custom" data-bs-toggle="modal" data-bs-target="#editModal" onclick="populateEditForm(@item.Id)">Edit</button>
+                                        <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editModal" onclick="populateEditForm(@item.Id)">Edit</button>
                                     </td>
                                 </tr>
                             }
                         </tbody>
                     </table>
+
+                    <!-- Pagination -->
+                    <nav>
+                        <ul class="pagination justify-content-center">
+                            @for (int i = 1; i <= Model.ToplamSayfa; i++)
+                            {
+                                var routeValues = new Dictionary<string, string>
+                                {
+                                    ["Sayfa"] = i.ToString()
+                                };
+                                if (!string.IsNullOrEmpty(Model.SearchName))
+                                {
+                                    routeValues["SearchName"] = Model.SearchName;
+                                }
+
+                                string url = QueryHelpers.AddQueryString("Index", routeValues);
+
+                                <li class="page-item @(i == Model.Sayfa ? "active" : "")">
+                                    <a class="page-link" href="@url">@i</a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal for Editing Class -->
+    <!-- Edit Modal -->
     <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editModalLabel">Edit Class</h5>
+                    <h5 class="modal-title">Edit Class</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="editForm" method="post" asp-page-handler="Edit">
-                        <input type="hidden" id="editId" name="Id" />
+                        <input type="hidden" id="editId" name="ClassInformation.Id" />
                         <div class="form-group">
                             <label for="editClassName">Class Name</label>
-                            <input type="text" class="form-control" id="editClassName" name="ClassName" required />
+                            <input type="text" class="form-control" id="editClassName" name="ClassInformation.ClassName" required />
                         </div>
                         <div class="form-group">
                             <label for="editStudentCount">Student Count</label>
-                            <input type="number" class="form-control" id="editStudentCount" name="StudentCount" required />
+                            <input type="number" class="form-control" id="editStudentCount" name="ClassInformation.StudentCount" required />
                         </div>
                         <div class="form-group">
                             <label for="editDescription">Description</label>
-                            <textarea class="form-control" id="editDescription" name="Description" required></textarea>
+                            <textarea class="form-control" id="editDescription" name="ClassInformation.Description" required></textarea>
                         </div>
-                        <button type="submit" class="btn btn-custom">Save Changes</button>
+                        <button type="submit" class="btn btn-success btn-custom">Save Changes</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function populateEditForm(id) {
-            // Find the class by Id and fill the modal form with the class data
-            var classData = @Html.Raw(Json.Serialize(Model.Classes)); // Serialize the class data
+            var classData = @Html.Raw(Json.Serialize(Model.Classes));
             var selectedClass = classData.find(c => c.Id === id);
 
             if (selectedClass) {

@@ -28,3 +28,34 @@ C:\Users\c2111023\Desktop\lab5\Week5\obj\Debug\net8.0\refint\Week5.dll
 C:\Users\c2111023\Desktop\lab5\Week5\obj\Debug\net8.0\Week5.pdb
 C:\Users\c2111023\Desktop\lab5\Week5\obj\Debug\net8.0\Week5.genruntimeconfig.cache
 C:\Users\c2111023\Desktop\lab5\Week5\obj\Debug\net8.0\ref\Week5.dll
+C:\Users\Kayra DALÇIK\Desktop\Ceng382_25_26_202111023\week5\bin\Debug\net8.0\appsettings.Development.json
+C:\Users\Kayra DALÇIK\Desktop\Ceng382_25_26_202111023\week5\bin\Debug\net8.0\appsettings.json
+C:\Users\Kayra DALÇIK\Desktop\Ceng382_25_26_202111023\week5\bin\Debug\net8.0\Week5.staticwebassets.runtime.json
+C:\Users\Kayra DALÇIK\Desktop\Ceng382_25_26_202111023\week5\bin\Debug\net8.0\Week5.exe
+C:\Users\Kayra DALÇIK\Desktop\Ceng382_25_26_202111023\week5\bin\Debug\net8.0\Week5.deps.json
+C:\Users\Kayra DALÇIK\Desktop\Ceng382_25_26_202111023\week5\bin\Debug\net8.0\Week5.runtimeconfig.json
+C:\Users\Kayra DALÇIK\Desktop\Ceng382_25_26_202111023\week5\bin\Debug\net8.0\Week5.dll
+C:\Users\Kayra DALÇIK\Desktop\Ceng382_25_26_202111023\week5\bin\Debug\net8.0\Week5.pdb
+C:\Users\Kayra DALÇIK\Desktop\Ceng382_25_26_202111023\week5\obj\Debug\net8.0\Week5.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Kayra DALÇIK\Desktop\Ceng382_25_26_202111023\week5\obj\Debug\net8.0\Week5.AssemblyInfoInputs.cache
+C:\Users\Kayra DALÇIK\Desktop\Ceng382_25_26_202111023\week5\obj\Debug\net8.0\Week5.AssemblyInfo.cs
+C:\Users\Kayra DALÇIK\Desktop\Ceng382_25_26_202111023\week5\obj\Debug\net8.0\Week5.csproj.CoreCompileInputs.cache
+C:\Users\Kayra DALÇIK\Desktop\Ceng382_25_26_202111023\week5\obj\Debug\net8.0\Week5.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Kayra DALÇIK\Desktop\Ceng382_25_26_202111023\week5\obj\Debug\net8.0\Week5.RazorAssemblyInfo.cache
+C:\Users\Kayra DALÇIK\Desktop\Ceng382_25_26_202111023\week5\obj\Debug\net8.0\Week5.RazorAssemblyInfo.cs
+C:\Users\Kayra DALÇIK\Desktop\Ceng382_25_26_202111023\week5\obj\Debug\net8.0\Week5.sourcelink.json
+C:\Users\Kayra DALÇIK\Desktop\Ceng382_25_26_202111023\week5\obj\Debug\net8.0\staticwebassets.build.json
+C:\Users\Kayra DALÇIK\Desktop\Ceng382_25_26_202111023\week5\obj\Debug\net8.0\staticwebassets.development.json
+C:\Users\Kayra DALÇIK\Desktop\Ceng382_25_26_202111023\week5\obj\Debug\net8.0\staticwebassets\msbuild.Week5.Microsoft.AspNetCore.StaticWebAssets.props
+C:\Users\Kayra DALÇIK\Desktop\Ceng382_25_26_202111023\week5\obj\Debug\net8.0\staticwebassets\msbuild.build.Week5.props
+C:\Users\Kayra DALÇIK\Desktop\Ceng382_25_26_202111023\week5\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.Week5.props
+C:\Users\Kayra DALÇIK\Desktop\Ceng382_25_26_202111023\week5\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.Week5.props
+C:\Users\Kayra DALÇIK\Desktop\Ceng382_25_26_202111023\week5\obj\Debug\net8.0\staticwebassets.pack.json
+C:\Users\Kayra DALÇIK\Desktop\Ceng382_25_26_202111023\week5\obj\Debug\net8.0\scopedcss\Pages\Shared\_Layout.cshtml.rz.scp.css
+C:\Users\Kayra DALÇIK\Desktop\Ceng382_25_26_202111023\week5\obj\Debug\net8.0\scopedcss\bundle\Week5.styles.css
+C:\Users\Kayra DALÇIK\Desktop\Ceng382_25_26_202111023\week5\obj\Debug\net8.0\scopedcss\projectbundle\Week5.bundle.scp.css
+C:\Users\Kayra DALÇIK\Desktop\Ceng382_25_26_202111023\week5\obj\Debug\net8.0\Week5.dll
+C:\Users\Kayra DALÇIK\Desktop\Ceng382_25_26_202111023\week5\obj\Debug\net8.0\refint\Week5.dll
+C:\Users\Kayra DALÇIK\Desktop\Ceng382_25_26_202111023\week5\obj\Debug\net8.0\Week5.pdb
+C:\Users\Kayra DALÇIK\Desktop\Ceng382_25_26_202111023\week5\obj\Debug\net8.0\Week5.genruntimeconfig.cache
+C:\Users\Kayra DALÇIK\Desktop\Ceng382_25_26_202111023\week5\obj\Debug\net8.0\ref\Week5.dll

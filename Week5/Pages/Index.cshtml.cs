@@ -2,29 +2,78 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using YourProjectName.Models;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace YourProjectName.Pages
 {
     public class IndexModel : PageModel
     {
-        // In-memory storage
         private static List<ClassInformationModel> _classes = new List<ClassInformationModel>();
         private static int _nextId = 1;
 
-        public List<ClassInformationModel> Classes => _classes;
+        // Sayfa başına gösterilecek kayıt sayısı (10 olarak güncellendi)
+        public int SayfaBoyutu { get; set; } = 10;
+
+        // Kullanıcıdan alınan filtre değeri (GET)
+        [BindProperty(SupportsGet = true)]
+        public string? SearchName { get; set; }
+
+        // Kullanıcıdan alınan sayfa numarası (GET)
+        [BindProperty(SupportsGet = true)]
+        public int Sayfa { get; set; } = 1;
+
+        // Sayfalama için toplam sayfa sayısı
+        public int ToplamSayfa { get; set; }
+
+        // Ekranda gösterilecek filtrelenmiş sınıflar
+        public List<ClassInformationModel> Classes { get; set; } = new();
 
         [BindProperty]
-        // Nullable olarak işaretlendi
         public ClassInformationModel? ClassInformation { get; set; }
+
+        public void OnGet()
+        {
+            // Veri yoksa 100 sahte kayıt oluştur
+            if (_classes.Count == 0)
+            {
+                for (int i = 1; i <= 100; i++)
+                {
+                    _classes.Add(new ClassInformationModel
+                    {
+                        Id = _nextId++,
+                        ClassName = $"Sınıf {i}",
+                        StudentCount = 10 + (i % 5),
+                        Description = i % 2 == 0 ? "Sayısal" : "Sözel"
+                    });
+                }
+            }
+
+            IEnumerable<ClassInformationModel> sorgu = _classes;
+
+            // Filtre uygula
+            if (!string.IsNullOrEmpty(SearchName))
+            {
+                sorgu = sorgu.Where(c => c.ClassName.Contains(SearchName));
+            }
+
+            // Toplam sayfa sayısını hesapla
+            int toplamKayit = sorgu.Count();
+            ToplamSayfa = (int)System.Math.Ceiling(toplamKayit / (double)SayfaBoyutu);
+
+            // Sayfaya göre verileri getir
+            Classes = sorgu
+                .Skip((Sayfa - 1) * SayfaBoyutu)
+                .Take(SayfaBoyutu)
+                .ToList();
+        }
 
         public IActionResult OnPostAdd()
         {
-            // Validate the form data and add the new class to the list
             if (ModelState.IsValid && ClassInformation != null)
             {
                 ClassInformation.Id = _nextId++;
                 _classes.Add(ClassInformation);
-                return RedirectToPage();
+                return RedirectToPage(new { Sayfa, SearchName });
             }
 
             return Page();
@@ -32,31 +81,30 @@ namespace YourProjectName.Pages
 
         public IActionResult OnPostDelete(int id)
         {
-            // Find the class by Id and remove it from the list
             var classToDelete = _classes.Find(c => c.Id == id);
             if (classToDelete != null)
             {
                 _classes.Remove(classToDelete);
             }
 
-            return RedirectToPage();
+            return RedirectToPage(new { Sayfa, SearchName });
         }
 
         public IActionResult OnPostEdit()
         {
             if (ModelState.IsValid && ClassInformation != null)
             {
-                // Find the class to update by Id
                 var classToEdit = _classes.Find(c => c.Id == ClassInformation.Id);
                 if (classToEdit != null)
                 {
-                    // Update class properties
                     classToEdit.ClassName = ClassInformation.ClassName;
                     classToEdit.StudentCount = ClassInformation.StudentCount;
                     classToEdit.Description = ClassInformation.Description;
                 }
-                return RedirectToPage();
+
+                return RedirectToPage(new { Sayfa, SearchName });
             }
+
             return Page();
         }
     }
