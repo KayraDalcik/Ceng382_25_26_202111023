@@ -12,29 +12,43 @@ namespace YourProjectName.Pages
         private static List<ClassInformationModel> _classes = new List<ClassInformationModel>();
         private static int _nextId = 1;
 
-        // Sayfa başına gösterilecek kayıt sayısı (10 olarak güncellendi)
         public int SayfaBoyutu { get; set; } = 10;
 
-        // Kullanıcıdan alınan filtre değeri (GET)
         [BindProperty(SupportsGet = true)]
         public string? SearchName { get; set; }
 
-        // Kullanıcıdan alınan sayfa numarası (GET)
         [BindProperty(SupportsGet = true)]
         public int Sayfa { get; set; } = 1;
 
-        // Sayfalama için toplam sayfa sayısı
+        [BindProperty(SupportsGet = true)]
+        public List<string> SelectedColumns { get; set; } = new();
+
         public int ToplamSayfa { get; set; }
 
-        // Ekranda gösterilecek filtrelenmiş sınıflar
         public List<ClassInformationModel> Classes { get; set; } = new();
 
         [BindProperty]
         public ClassInformationModel? ClassInformation { get; set; }
 
-        public void OnGet()
+        public IActionResult OnGet()
         {
-            // Veri yoksa 100 sahte kayıt oluştur
+            var sessionToken = HttpContext.Session.GetString("token");
+            var sessionUsername = HttpContext.Session.GetString("username");
+            var sessionId = HttpContext.Session.GetString("session_id");
+
+            var cookieToken = Request.Cookies["token"];
+            var cookieUsername = Request.Cookies["username"];
+            var cookieSessionId = Request.Cookies["session_id"];
+
+            if (string.IsNullOrEmpty(sessionToken) ||
+                string.IsNullOrEmpty(sessionUsername) ||
+                sessionToken != cookieToken ||
+                sessionUsername != cookieUsername ||
+                sessionId != cookieSessionId)
+            {
+                return RedirectToPage("/Login");
+            }
+
             if (_classes.Count == 0)
             {
                 for (int i = 1; i <= 100; i++)
@@ -49,23 +63,27 @@ namespace YourProjectName.Pages
                 }
             }
 
+            if (SelectedColumns == null || !SelectedColumns.Any())
+            {
+                SelectedColumns = new List<string> { "ClassName", "StudentCount", "Description" };
+            }
+
             IEnumerable<ClassInformationModel> sorgu = _classes;
 
-            // Filtre uygula
             if (!string.IsNullOrEmpty(SearchName))
             {
                 sorgu = sorgu.Where(c => c.ClassName.Contains(SearchName));
             }
 
-            // Toplam sayfa sayısını hesapla
             int toplamKayit = sorgu.Count();
             ToplamSayfa = (int)System.Math.Ceiling(toplamKayit / (double)SayfaBoyutu);
 
-            // Sayfaya göre verileri getir
             Classes = sorgu
                 .Skip((Sayfa - 1) * SayfaBoyutu)
                 .Take(SayfaBoyutu)
                 .ToList();
+
+            return Page();
         }
 
         public IActionResult OnPostAdd()
@@ -74,7 +92,7 @@ namespace YourProjectName.Pages
             {
                 ClassInformation.Id = _nextId++;
                 _classes.Add(ClassInformation);
-                return RedirectToPage(new { Sayfa, SearchName });
+                return RedirectToPage(new { Sayfa, SearchName, SelectedColumns });
             }
 
             return Page();
@@ -88,7 +106,7 @@ namespace YourProjectName.Pages
                 _classes.Remove(classToDelete);
             }
 
-            return RedirectToPage(new { Sayfa, SearchName });
+            return RedirectToPage(new { Sayfa, SearchName, SelectedColumns });
         }
 
         public IActionResult OnPostEdit()
@@ -103,16 +121,17 @@ namespace YourProjectName.Pages
                     classToEdit.Description = ClassInformation.Description;
                 }
 
-                return RedirectToPage(new { Sayfa, SearchName });
+                return RedirectToPage(new { Sayfa, SearchName, SelectedColumns });
             }
 
             return Page();
         }
 
-        // Export JSON method (select specific columns)
         public IActionResult OnPostExportJson([FromForm] List<string> SelectedColumns)
         {
-            var selectedClasses = _classes.Select(c => 
+            this.SelectedColumns = SelectedColumns ?? new();
+
+            var selectedClasses = _classes.Select(c =>
             {
                 var dict = new Dictionary<string, object>();
                 if (SelectedColumns.Contains("ClassName")) dict["ClassName"] = c.ClassName;

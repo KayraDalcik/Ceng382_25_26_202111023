@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Kayra DALÇIK\\Desktop\\Ceng382_25_26_202111023\\week5\\Week5.csproj",
+      "projectUniqueName": "C:\\Users\\Kayra DALÇIK\\Desktop\\Ders\\CENG 382\\Ceng382_25_26_202111023\\week5\\Week5.csproj",
       "projectName": "Week5",
-      "projectPath": "C:\\Users\\Kayra DALÇIK\\Desktop\\Ceng382_25_26_202111023\\week5\\Week5.csproj",
+      "projectPath": "C:\\Users\\Kayra DALÇIK\\Desktop\\Ders\\CENG 382\\Ceng382_25_26_202111023\\week5\\Week5.csproj",
       "packagesPath": "C:\\Users\\Kayra DALÇIK\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Kayra DALÇIK\\Desktop\\Ceng382_25_26_202111023\\week5\\obj\\",
+      "outputPath": "C:\\Users\\Kayra DALÇIK\\Desktop\\Ders\\CENG 382\\Ceng382_25_26_202111023\\week5\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Kayra DALÇIK\\AppData\\Roaming\\NuGet\\NuGet.Config"

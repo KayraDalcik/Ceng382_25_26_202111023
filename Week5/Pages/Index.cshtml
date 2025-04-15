@@ -36,16 +36,20 @@
             border-color: #0d6efd;
         }
 
-        /* Hide the ID column */
         .hidden-id {
             display: none;
         }
     </style>
 </head>
 <body>
-    <!-- Navbar -->
+    <!-- Navbar with Logout Button -->
     <nav class="navbar navbar-expand-lg navbar-dark px-3">
         <a class="navbar-brand" href="#">Class Manager</a>
+        <div class="ms-auto">
+            <form method="get" asp-page="/Logout" class="d-inline">
+                <button type="submit" class="btn btn-danger">Logout</button>
+            </form>
+        </div>
     </nav>
 
     <!-- Main Content -->
@@ -86,35 +90,40 @@
                         </div>
                     </form>
 
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th class="hidden-id">Id</th>
-                                <th>Class Name</th>
-                                <th>Student Count</th>
-                                <th>Description</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model.Classes)
-                            {
+                    <form method="post" asp-page-handler="ExportJson">
+                        <table class="table table-striped">
+                            <thead>
                                 <tr>
-                                    <td class="hidden-id">@item.Id</td>
-                                    <td>@item.ClassName</td>
-                                    <td>@item.StudentCount</td>
-                                    <td>@item.Description</td>
-                                    <td>
-                                        <form method="post" asp-page-handler="Delete" style="display:inline;">
-                                            <input type="hidden" name="id" value="@item.Id" />
-                                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                                        </form>
-                                        <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editModal" onclick="populateEditForm(@item.Id)">Edit</button>
-                                    </td>
+                                    <th class="hidden-id">Id</th>
+                                    <th><input type="checkbox" name="SelectedColumns" value="ClassName" checked /> Class Name</th>
+                                    <th><input type="checkbox" name="SelectedColumns" value="StudentCount" checked /> Student Count</th>
+                                    <th><input type="checkbox" name="SelectedColumns" value="Description" checked /> Description</th>
+                                    <th>Actions</th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Classes)
+                                {
+                                    <tr>
+                                        <td class="hidden-id">@item.Id</td>
+                                        <td>@item.ClassName</td>
+                                        <td>@item.StudentCount</td>
+                                        <td>@item.Description</td>
+                                        <td>
+                                            <form method="post" asp-page-handler="Delete" style="display:inline;">
+                                                <input type="hidden" name="id" value="@item.Id" />
+                                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                            </form>
+                                            <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editModal" onclick="populateEditForm(@item.Id)">Edit</button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-success">Export Selected</button>
+                        </div>
+                    </form>
 
                     <!-- Pagination -->
                     <nav>
@@ -129,7 +138,6 @@
                                 {
                                     routeValues["SearchName"] = Model.SearchName;
                                 }
-
                                 string url = QueryHelpers.AddQueryString("Index", routeValues);
 
                                 <li class="page-item @(i == Model.Sayfa ? "active" : "")">
@@ -141,22 +149,6 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- Export Button -->
-    <div class="text-center my-3">
-        <!-- Column Selection Form -->
-        <form method="post" asp-page-handler="ExportJson">
-            <div class="form-group">
-                <label for="selectedColumns">Select Columns to Export</label>
-                <select class="form-control" id="selectedColumns" name="SelectedColumns" multiple>
-                    <option value="ClassName">Class Name</option>
-                    <option value="StudentCount">Student Count</option>
-                    <option value="Description">Description</option>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-success mt-2">Export Data</button>
-        </form>
     </div>
 
     <!-- Edit Modal -->
