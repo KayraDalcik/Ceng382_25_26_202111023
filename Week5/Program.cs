@@ -1,7 +1,14 @@
+using Microsoft.EntityFrameworkCore;
+using Week5.Data; // ← Proje namespace'ini burada doğru yaz!
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+
+// 👉 EKLENEN KISIM: DbContext servisini ekle
+builder.Services.AddDbContext<SchoolDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SchoolDbConnection")));
 
 // 👉 Session servisini ekle
 builder.Services.AddSession(); 

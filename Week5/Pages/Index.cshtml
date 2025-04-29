@@ -1,5 +1,5 @@
 ﻿@page
-@model YourProjectName.Pages.IndexModel
+@model Week5.Pages.Classes.IndexModel
 @{
     ViewData["Title"] = "Class Information";
 }
@@ -14,35 +14,17 @@
     <title>@ViewData["Title"]</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <style>
-        body {
-            background-color: #f8f9fa;
-        }
-
-        .navbar {
-            background-color: #343a40;
-        }
-
-        .btn-custom {
-            margin-top: 10px;
-        }
-
-        .card {
-            margin-top: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
+        body { background-color: #f8f9fa; }
+        .navbar { background-color: #343a40; }
+        .btn-custom { margin-top: 10px; }
+        .card { margin-top: 20px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
         .pagination .page-item.active .page-link {
-            background-color: #0d6efd;
-            border-color: #0d6efd;
+            background-color: #0d6efd; border-color: #0d6efd;
         }
-
-        .hidden-id {
-            display: none;
-        }
+        .hidden-id { display: none; }
     </style>
 </head>
 <body>
-    <!-- Navbar with Logout Button -->
     <nav class="navbar navbar-expand-lg navbar-dark px-3">
         <a class="navbar-brand" href="#">Class Manager</a>
         <div class="ms-auto">
@@ -52,37 +34,35 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
     <div class="container">
         <div class="row">
-            <!-- Add Class Form -->
             <div class="col-md-6">
                 <div class="card p-4">
                     <h2>Add Class</h2>
                     <form method="post">
                         <div class="form-group">
                             <label for="ClassName">Class Name</label>
-                            <input type="text" class="form-control" id="ClassName" name="ClassInformation.ClassName" required />
+                            <input type="text" class="form-control" id="ClassName" name="ClassInformation.Name" required />
                         </div>
                         <div class="form-group">
                             <label for="StudentCount">Student Count</label>
-                            <input type="number" class="form-control" id="StudentCount" name="ClassInformation.StudentCount" required />
+                            <input type="number" class="form-control" id="StudentCount" name="ClassInformation.PersonCount" required />
                         </div>
                         <div class="form-group">
                             <label for="Description">Description</label>
                             <textarea class="form-control" id="Description" name="ClassInformation.Description" required></textarea>
                         </div>
+                        <label class="form-check-label">
+                            <input type="checkbox" class="form-check-input" name="ClassInformation.IsActive" value="true" /> Is Active
+                        </label>
                         <button type="submit" class="btn btn-primary btn-custom" asp-page-handler="Add">Add Class</button>
                     </form>
                 </div>
             </div>
 
-            <!-- Class List + Filter -->
             <div class="col-md-6">
                 <div class="card p-4">
                     <h2>Class List</h2>
-
-                    <!-- Filter Form -->
                     <form method="get" class="mb-3">
                         <div class="input-group">
                             <input type="text" name="SearchName" value="@Model.SearchName" class="form-control" placeholder="Filter by Class Name" />
@@ -90,14 +70,16 @@
                         </div>
                     </form>
 
-                    <form method="post" asp-page-handler="ExportJson">
+                    <form method="post" asp-page-handler="ExportSelected" id="exportSelectedForm">
+                        <input type="hidden" name="SelectedColumns" id="selectedColumnsInput" />
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th class="hidden-id">Id</th>
-                                    <th><input type="checkbox" name="SelectedColumns" value="ClassName" checked /> Class Name</th>
-                                    <th><input type="checkbox" name="SelectedColumns" value="StudentCount" checked /> Student Count</th>
-                                    <th><input type="checkbox" name="SelectedColumns" value="Description" checked /> Description</th>
+                                    <th><input type="checkbox" value="Id" checked onchange="toggleColumn(this)"> Id</th>
+                                    <th><input type="checkbox" value="Name" checked onchange="toggleColumn(this)"> Class Name</th>
+                                    <th><input type="checkbox" value="PersonCount" checked onchange="toggleColumn(this)"> Student Count</th>
+                                    <th><input type="checkbox" value="Description" checked onchange="toggleColumn(this)"> Description</th>
+                                    <th><input type="checkbox" value="IsActive" checked onchange="toggleColumn(this)"> Is Active</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -105,10 +87,11 @@
                                 @foreach (var item in Model.Classes)
                                 {
                                     <tr>
-                                        <td class="hidden-id">@item.Id</td>
-                                        <td>@item.ClassName</td>
-                                        <td>@item.StudentCount</td>
-                                        <td>@item.Description</td>
+                                        <td class="column-Id">@item.Id</td>
+                                        <td class="column-Name">@item.Name</td>
+                                        <td class="column-PersonCount">@item.PersonCount</td>
+                                        <td class="column-Description">@item.Description</td>
+                                        <td class="column-IsActive">@item.IsActive</td>
                                         <td>
                                             <form method="post" asp-page-handler="Delete" style="display:inline;">
                                                 <input type="hidden" name="id" value="@item.Id" />
@@ -121,11 +104,10 @@
                             </tbody>
                         </table>
                         <div class="text-end">
-                            <button type="submit" class="btn btn-success">Export Selected</button>
+                            <button type="button" onclick="submitSelectedColumns()" class="btn btn-success">Export Selected</button>
                         </div>
                     </form>
 
-                    <!-- Pagination -->
                     <nav>
                         <ul class="pagination justify-content-center">
                             @for (int i = 1; i <= Model.ToplamSayfa; i++)
@@ -139,7 +121,6 @@
                                     routeValues["SearchName"] = Model.SearchName;
                                 }
                                 string url = QueryHelpers.AddQueryString("Index", routeValues);
-
                                 <li class="page-item @(i == Model.Sayfa ? "active" : "")">
                                     <a class="page-link" href="@url">@i</a>
                                 </li>
@@ -151,7 +132,6 @@
         </div>
     </div>
 
-    <!-- Edit Modal -->
     <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -164,16 +144,19 @@
                         <input type="hidden" id="editId" name="ClassInformation.Id" />
                         <div class="form-group">
                             <label for="editClassName">Class Name</label>
-                            <input type="text" class="form-control" id="editClassName" name="ClassInformation.ClassName" required />
+                            <input type="text" class="form-control" id="editClassName" name="ClassInformation.Name" required />
                         </div>
                         <div class="form-group">
                             <label for="editStudentCount">Student Count</label>
-                            <input type="number" class="form-control" id="editStudentCount" name="ClassInformation.StudentCount" required />
+                            <input type="number" class="form-control" id="editStudentCount" name="ClassInformation.PersonCount" required />
                         </div>
                         <div class="form-group">
                             <label for="editDescription">Description</label>
                             <textarea class="form-control" id="editDescription" name="ClassInformation.Description" required></textarea>
                         </div>
+                        <label class="form-check-label">
+                            <input type="checkbox" class="form-check-input" name="ClassInformation.IsActive" value="true" /> Is Active
+                        </label>
                         <button type="submit" class="btn btn-success btn-custom">Save Changes</button>
                     </form>
                 </div>
@@ -181,7 +164,32 @@
         </div>
     </div>
 
-    <!-- Scripts -->
+    <script>
+        function submitSelectedColumns() {
+            const selected = [...document.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value);
+            if (selected.length === 0) {
+                alert("Please select at least one column.");
+                return;
+            }
+            document.getElementById("selectedColumnsInput").value = selected.join(",");
+            document.getElementById("exportSelectedForm").submit();
+        }
+
+        function toggleColumn(checkbox) {
+            const colClass = "column-" + checkbox.value;
+            document.querySelectorAll("." + colClass).forEach(el => {
+                el.style.display = checkbox.checked ? "table-cell" : "none";
+            });
+        }
+
+        function populateEditForm(id) {
+            const row = [...document.querySelectorAll("input[type=hidden][value='" + id + "']")][0].closest("tr");
+            document.getElementById("editId").value = id;
+            document.getElementById("editClassName").value = row.querySelector(".column-Name").innerText;
+            document.getElementById("editStudentCount").value = row.querySelector(".column-PersonCount").innerText;
+            document.getElementById("editDescription").value = row.querySelector(".column-Description").innerText;
+        }
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

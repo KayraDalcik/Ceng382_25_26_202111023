@@ -34,7 +34,7 @@ public class LoginModel : PageModel
             // Cookie’ye yaz
             var options = new CookieOptions
             {
-                Expires = DateTime.Now.AddMinutes(1),
+                Expires = DateTime.Now.AddMinutes(30),
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.Strict

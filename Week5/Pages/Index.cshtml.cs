@@ -1,16 +1,20 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using YourProjectName.Models;
-using System.Collections.Generic;
-using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
+using Week5.Data;
+using Week5.Models;
 
-namespace YourProjectName.Pages
+namespace Week5.Pages.Classes
 {
     public class IndexModel : PageModel
     {
-        private static List<ClassInformationModel> _classes = new List<ClassInformationModel>();
-        private static int _nextId = 1;
+        private readonly SchoolDbContext _context;
+
+        public IndexModel(SchoolDbContext context)
+        {
+            _context = context;
+        }
 
         public int SayfaBoyutu { get; set; } = 10;
 
@@ -20,17 +24,17 @@ namespace YourProjectName.Pages
         [BindProperty(SupportsGet = true)]
         public int Sayfa { get; set; } = 1;
 
-        [BindProperty(SupportsGet = true)]
-        public List<string> SelectedColumns { get; set; } = new();
-
         public int ToplamSayfa { get; set; }
 
-        public List<ClassInformationModel> Classes { get; set; } = new();
+        public List<Class> ClassList { get; set; } = new();
+
+        // ✅ Bu satır sayfadaki @Model.Classes kullanımını destekler
+        public List<Class> Classes => ClassList;
 
         [BindProperty]
-        public ClassInformationModel? ClassInformation { get; set; }
+        public Class? ClassInformation { get; set; }
 
-        public IActionResult OnGet()
+        public async Task<IActionResult> OnGetAsync()
         {
             var sessionToken = HttpContext.Session.GetString("token");
             var sessionUsername = HttpContext.Session.GetString("username");
@@ -49,94 +53,91 @@ namespace YourProjectName.Pages
                 return RedirectToPage("/Login");
             }
 
-            if (_classes.Count == 0)
-            {
-                for (int i = 1; i <= 100; i++)
-                {
-                    _classes.Add(new ClassInformationModel
-                    {
-                        Id = _nextId++,
-                        ClassName = $"Sınıf {i}",
-                        StudentCount = 10 + (i % 5),
-                        Description = i % 2 == 0 ? "Sayısal" : "Sözel"
-                    });
-                }
-            }
-
-            if (SelectedColumns == null || !SelectedColumns.Any())
-            {
-                SelectedColumns = new List<string> { "ClassName", "StudentCount", "Description" };
-            }
-
-            IEnumerable<ClassInformationModel> sorgu = _classes;
+            IQueryable<Class> query = _context.Classes;
 
             if (!string.IsNullOrEmpty(SearchName))
             {
-                sorgu = sorgu.Where(c => c.ClassName.Contains(SearchName));
+                query = query.Where(c => c.Name.Contains(SearchName));
             }
 
-            int toplamKayit = sorgu.Count();
-            ToplamSayfa = (int)System.Math.Ceiling(toplamKayit / (double)SayfaBoyutu);
+            int toplamKayit = await query.CountAsync();
+            ToplamSayfa = (int)Math.Ceiling(toplamKayit / (double)SayfaBoyutu);
 
-            Classes = sorgu
+            ClassList = await query
                 .Skip((Sayfa - 1) * SayfaBoyutu)
                 .Take(SayfaBoyutu)
-                .ToList();
+                .ToListAsync();
 
             return Page();
         }
 
-        public IActionResult OnPostAdd()
+        public async Task<IActionResult> OnPostAddAsync()
         {
             if (ModelState.IsValid && ClassInformation != null)
             {
-                ClassInformation.Id = _nextId++;
-                _classes.Add(ClassInformation);
-                return RedirectToPage(new { Sayfa, SearchName, SelectedColumns });
+                _context.Classes.Add(ClassInformation);
+                await _context.SaveChangesAsync();
+                return RedirectToPage(new { Sayfa, SearchName });
             }
 
+            await OnGetAsync(); // reload data if validation fails
             return Page();
         }
 
-        public IActionResult OnPostDelete(int id)
+        public async Task<IActionResult> OnPostDeleteAsync(int id)
         {
-            var classToDelete = _classes.Find(c => c.Id == id);
+            var classToDelete = await _context.Classes.FindAsync(id);
             if (classToDelete != null)
             {
-                _classes.Remove(classToDelete);
+                _context.Classes.Remove(classToDelete);
+                await _context.SaveChangesAsync();
             }
 
-            return RedirectToPage(new { Sayfa, SearchName, SelectedColumns });
+            return RedirectToPage(new { Sayfa, SearchName });
         }
 
-        public IActionResult OnPostEdit()
+        public async Task<IActionResult> OnPostEditAsync()
         {
             if (ModelState.IsValid && ClassInformation != null)
             {
-                var classToEdit = _classes.Find(c => c.Id == ClassInformation.Id);
+                var classToEdit = await _context.Classes.FindAsync(ClassInformation.Id);
                 if (classToEdit != null)
                 {
-                    classToEdit.ClassName = ClassInformation.ClassName;
-                    classToEdit.StudentCount = ClassInformation.StudentCount;
+                    classToEdit.Name = ClassInformation.Name;
+                    classToEdit.PersonCount = ClassInformation.PersonCount;
                     classToEdit.Description = ClassInformation.Description;
+                    classToEdit.IsActive = ClassInformation.IsActive;
+
+                    await _context.SaveChangesAsync();
                 }
 
-                return RedirectToPage(new { Sayfa, SearchName, SelectedColumns });
+                return RedirectToPage(new { Sayfa, SearchName });
             }
 
+            await OnGetAsync(); // reload data if validation fails
             return Page();
         }
 
-        public IActionResult OnPostExportJson([FromForm] List<string> SelectedColumns)
+        public async Task<IActionResult> OnPostExportSelectedAsync([FromForm] string SelectedColumns)
         {
-            this.SelectedColumns = SelectedColumns ?? new();
+            var selectedList = SelectedColumns?.Split(',').ToList() ?? new List<string>();
 
-            var selectedClasses = _classes.Select(c =>
+            var allClasses = await _context.Classes.ToListAsync();
+
+            var selectedClasses = allClasses.Select(c =>
             {
                 var dict = new Dictionary<string, object>();
-                if (SelectedColumns.Contains("ClassName")) dict["ClassName"] = c.ClassName;
-                if (SelectedColumns.Contains("StudentCount")) dict["StudentCount"] = c.StudentCount;
-                if (SelectedColumns.Contains("Description")) dict["Description"] = c.Description;
+                foreach (var col in selectedList)
+                {
+                    switch (col)
+                    {
+                        case "Id": dict["Id"] = c.Id; break;
+                        case "Name": dict["Name"] = c.Name; break;
+                        case "PersonCount": dict["PersonCount"] = c.PersonCount; break;
+                        case "Description": dict["Description"] = c.Description; break;
+                        case "IsActive": dict["IsActive"] = c.IsActive; break;
+                    }
+                }
                 return dict;
             }).ToList();
 
