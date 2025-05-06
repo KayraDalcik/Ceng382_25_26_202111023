@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization; // 🔹 Giriş kontrolü için
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,7 @@ using Week5.Models;
 
 namespace Week5.Pages.Classes
 {
+    [Authorize] // 🔐 Giriş yapmadan bu sayfaya erişilemez
     public class IndexModel : PageModel
     {
         private readonly SchoolDbContext _context;
@@ -28,7 +30,7 @@ namespace Week5.Pages.Classes
 
         public List<Class> ClassList { get; set; } = new();
 
-        // ✅ Bu satır sayfadaki @Model.Classes kullanımını destekler
+        // ✅ Sayfada @Model.Classes kullanımı için
         public List<Class> Classes => ClassList;
 
         [BindProperty]
@@ -36,23 +38,6 @@ namespace Week5.Pages.Classes
 
         public async Task<IActionResult> OnGetAsync()
         {
-            var sessionToken = HttpContext.Session.GetString("token");
-            var sessionUsername = HttpContext.Session.GetString("username");
-            var sessionId = HttpContext.Session.GetString("session_id");
-
-            var cookieToken = Request.Cookies["token"];
-            var cookieUsername = Request.Cookies["username"];
-            var cookieSessionId = Request.Cookies["session_id"];
-
-            if (string.IsNullOrEmpty(sessionToken) ||
-                string.IsNullOrEmpty(sessionUsername) ||
-                sessionToken != cookieToken ||
-                sessionUsername != cookieUsername ||
-                sessionId != cookieSessionId)
-            {
-                return RedirectToPage("/Login");
-            }
-
             IQueryable<Class> query = _context.Classes;
 
             if (!string.IsNullOrEmpty(SearchName))
